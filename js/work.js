@@ -46,7 +46,14 @@ const nextButton = document.querySelector(".carousel-next");
 const pagination = document.querySelector(".pagination-dots");
 const thumbnails = document.querySelector(".carousel-thumbnails");
 
-if (carousel && mainImage && previousImage && nextImage) {
+if (
+  carousel &&
+  mainImage &&
+  previousImage &&
+  nextImage &&
+  !carousel.dataset.initialized
+) {
+  carousel.dataset.initialized = "true";
   let activeIndex = 6;
   let dragStart = null;
 
@@ -154,6 +161,10 @@ if (carousel && mainImage && previousImage && nextImage) {
   document.addEventListener("keydown", handleKeyboard, { capture: true });
 
   carousel.addEventListener("pointerdown", (event) => {
+    if (event.target instanceof Element && event.target.closest(".carousel-arrow")) {
+      return;
+    }
+
     dragStart = event.clientX;
     carousel.setPointerCapture?.(event.pointerId);
   });
@@ -174,4 +185,9 @@ if (carousel && mainImage && previousImage && nextImage) {
   });
 
   render();
+
+  if (!carousel.dataset.autoplayStarted) {
+    carousel.dataset.autoplayStarted = "true";
+    window.setInterval(() => selectRelative(1), 4000);
+  }
 }
